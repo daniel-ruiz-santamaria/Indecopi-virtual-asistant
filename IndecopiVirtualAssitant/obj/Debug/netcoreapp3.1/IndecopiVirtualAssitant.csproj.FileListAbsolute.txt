@@ -54,3 +54,13 @@ C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssi
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Bot.Builder.AI.Luis.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.AzureKeyVault.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Rest.ClientRuntime.Azure.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Bot.Builder.Dialogs.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Definitions.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.Choice.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.DateTime.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.Number.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Recognizers.Text.NumberWithUnit.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Azure.Data.Tables.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\System.Memory.Data.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\System.Text.Encodings.Web.dll

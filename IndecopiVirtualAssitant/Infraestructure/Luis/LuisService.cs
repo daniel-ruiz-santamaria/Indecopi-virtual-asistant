@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IndecopiVirtualAssitant.Infraestructure.Luis
 {
-    public class LuisService
+    public class LuisService : ILuisService
     {
         public LuisRecognizer _luisRecognizer { get; set; }
 
@@ -18,6 +18,15 @@ namespace IndecopiVirtualAssitant.Infraestructure.Luis
                 conf["LuisApiKey"],
                 conf["LuisHostName"]
             );
+
+            var recognizerOptions = new LuisRecognizerOptionsV3(luisApplication)
+            {
+                PredictionOptions = new Microsoft.Bot.Builder.AI.LuisV3.LuisPredictionOptions()
+                {
+                    IncludeInstanceData = true
+                }
+            };
+            _luisRecognizer = new LuisRecognizer(recognizerOptions);
         }
     }
 }

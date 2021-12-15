@@ -44,6 +44,10 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "dependencies": {
+            "Azure.Data.Tables": {
+              "target": "Package",
+              "version": "[12.3.0, )"
+            },
             "Microsoft.Bot.Builder.AI.Luis": {
               "target": "Package",
               "version": "[4.7.2, )"
@@ -51,6 +55,10 @@
             "Microsoft.Bot.Builder.Azure.Blobs": {
               "target": "Package",
               "version": "[4.12.0, )"
+            },
+            "Microsoft.Bot.Builder.Dialogs": {
+              "target": "Package",
+              "version": "[4.7.2, )"
             },
             "Microsoft.Bot.Builder.Integration.AspNet.Core": {
               "target": "Package",

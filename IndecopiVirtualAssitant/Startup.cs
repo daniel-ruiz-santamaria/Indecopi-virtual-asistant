@@ -3,6 +3,9 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EmptyBot v4.15.0
 
+using IndecopiVirtualAssitant.Dialogs;
+using IndecopiVirtualAssitant.Infraestructure.Luis;
+//using IndecopiVirtualAssitant.Models.AzureTable;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +32,7 @@ namespace IndecopiVirtualAssitant
         {
             // Conexion a Blob storage para el state
             var blobStorageState = new BlobsStorage(
-                Configuration.GetSection("BlobStorageConnectionString").Value,
+                Configuration.GetSection("AzureStorageConnectionString").Value,
                 Configuration.GetSection("BlobStorageStateContainer").Value
                 );
             var userState = new UserState(blobStorageState);
@@ -43,13 +46,18 @@ namespace IndecopiVirtualAssitant
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, IndecopiVirtualAssitant>();
+            services.AddSingleton<ILuisService,LuisService>();
 
-            var lap = Configuration["LuisApiKey"];
-            var lai = Configuration["LuisAppId"];
-            var lhn = Configuration["LuisHostName"];
-            Debug.WriteLine(lap);
+            // DB
+            //services.AddSingleton<AnswerRepository>();
+            //services.AddSingleton<AuditRepository>();
+
+            // Dialog registration
+            services.AddSingleton<RootDialog>();
+
+            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
+            services.AddTransient<IBot, IndecopiVirtualAssitant<RootDialog>>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
