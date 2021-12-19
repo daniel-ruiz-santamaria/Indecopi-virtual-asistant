@@ -48,7 +48,15 @@
               "target": "Package",
               "version": "[12.3.0, )"
             },
+            "Microsoft.Azure.Cosmos.Table": {
+              "target": "Package",
+              "version": "[1.0.8, )"
+            },
             "Microsoft.Bot.Builder.AI.Luis": {
+              "target": "Package",
+              "version": "[4.7.2, )"
+            },
+            "Microsoft.Bot.Builder.AI.QnA": {
               "target": "Package",
               "version": "[4.7.2, )"
             },

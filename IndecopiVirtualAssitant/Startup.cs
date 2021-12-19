@@ -5,6 +5,9 @@
 
 using IndecopiVirtualAssitant.Dialogs;
 using IndecopiVirtualAssitant.Infraestructure.Luis;
+using IndecopiVirtualAssitant.Infraestructure.QnAMakerAI;
+using IndecopiVirtualAssitant.Repositories;
+using IndecopiVirtualAssitant.Services;
 //using IndecopiVirtualAssitant.Models.AzureTable;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +26,7 @@ namespace IndecopiVirtualAssitant
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
         }
 
         public IConfiguration Configuration { get; }
@@ -47,6 +51,12 @@ namespace IndecopiVirtualAssitant
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             services.AddSingleton<ILuisService,LuisService>();
+
+            services.AddSingleton<IQnAMakerAIService, QnAMakerAIService>();
+
+            services.AddSingleton<IAzureTableRepository, AzureTableRepository>();
+
+            services.AddSingleton<State>();
 
             // DB
             //services.AddSingleton<AnswerRepository>();

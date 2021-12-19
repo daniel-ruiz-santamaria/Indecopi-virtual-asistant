@@ -64,3 +64,11 @@ C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssi
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Azure.Data.Tables.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\System.Memory.Data.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\System.Text.Encodings.Web.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Azure.Cosmos.Table.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Azure.DocumentDB.Core.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.OData.Core.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.OData.Edm.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Spatial.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\runtimes\win7-x64\native\Cosmos.CRTCompat.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\runtimes\win7-x64\native\Microsoft.Azure.Documents.ServiceInterop.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Bot.Builder.AI.QnA.dll
