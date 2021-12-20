@@ -49,6 +49,7 @@ namespace IndecopiVirtualAssitant
         // Captura las actividades del usuario o del bot
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            await base.OnTurnAsync(turnContext, cancellationToken);
             await _userState.SaveChangesAsync(turnContext, false, cancellationToken);
             await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
         }

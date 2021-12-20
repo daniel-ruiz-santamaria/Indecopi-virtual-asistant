@@ -28,7 +28,6 @@ C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssi
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Rest.ClientRuntime.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\System.IdentityModel.Tokens.Jwt.dll
-C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\obj\Debug\netcoreapp3.1\IndecopiVirtualAssitant.csprojAssemblyReference.cache
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\obj\Debug\netcoreapp3.1\IndecopiVirtualAssitant.AssemblyInfoInputs.cache
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\obj\Debug\netcoreapp3.1\IndecopiVirtualAssitant.AssemblyInfo.cs
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\obj\Debug\netcoreapp3.1\IndecopiVirtualAssitant.csproj.CoreCompileInputs.cache
@@ -72,3 +71,5 @@ C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssi
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\runtimes\win7-x64\native\Cosmos.CRTCompat.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\runtimes\win7-x64\native\Microsoft.Azure.Documents.ServiceInterop.dll
 C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\bin\Debug\netcoreapp3.1\Microsoft.Bot.Builder.AI.QnA.dll
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\obj\Debug\netcoreapp3.1\IndecopiVirtualAssitant.csproj.AssemblyReference.cache
+C:\Users\danie\repositorios\indecopi\IndecopiVirtualAssitant\IndecopiVirtualAssitant\obj\Debug\netcoreapp3.1\IndecopiVirtualAssitant.GeneratedMSBuildEditorConfig.editorconfig
