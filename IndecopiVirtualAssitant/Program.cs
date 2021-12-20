@@ -7,6 +7,7 @@
 //using IndecopiVirtualAssitant.Models.AzureTable;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
@@ -21,16 +22,6 @@ namespace IndecopiVirtualAssitant
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
-            // MainAsync().GetAwaiter().GetResult();
-        }
-
-        private static async Task MainAsync()
-        {
-            /*
-            AnswerRepository ams = new AnswerRepository();
-            await ams.GetRandomAnswersByPartitionKey("PartitionKey");
-            return;
-            */
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

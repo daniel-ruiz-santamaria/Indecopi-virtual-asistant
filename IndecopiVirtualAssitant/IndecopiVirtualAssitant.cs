@@ -2,9 +2,13 @@
 // Licensed under the MIT License.
 
 // using IndecopiVirtualAssitant.Models.AzureTable;
+using Azure.Data.Tables;
+using IndecopiVirtualAssitant.Repositories;
+using IndecopiVirtualAssitant.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +20,17 @@ namespace IndecopiVirtualAssitant
         private readonly BotState _userState;
         private readonly BotState _conversationState;
         private readonly Dialog _dialog;
+        private readonly State _state;
+        private readonly IAzureTableRepository _tableRepository;
         // private readonly AuditRepository _auditRepository;
 
-        public IndecopiVirtualAssitant(UserState userState, ConversationState conversationState, T dialog/*, AuditRepository auditRepository*/)
+        public IndecopiVirtualAssitant(UserState userState, ConversationState conversationState, T dialog, State state, IAzureTableRepository tableRepository)
         {
             _userState = userState;
             _conversationState = conversationState;
             _dialog = dialog;
+            _state = state;
+            _tableRepository = tableRepository;
             // _auditRepository = auditRepository;
         }
 
@@ -32,7 +40,8 @@ namespace IndecopiVirtualAssitant
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Hello world!"), cancellationToken);
+                    var answer = await _tableRepository.getAnswer("answers", "InitialGreeting", "Hola, soy un asistente virtual, estoy desando ayudarte ¿Cómo puedo ayudar?");
+                    await turnContext.SendActivityAsync(MessageFactory.Text(answer), cancellationToken);
                 }
             }
         }
@@ -48,6 +57,8 @@ namespace IndecopiVirtualAssitant
         // Captura todas las mensajes del usuario
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            // this._state.MessageActivity = turnContext.Activity;
+            this._state.AddActivity(turnContext);
             await _dialog.RunAsync(
                 turnContext,
                 _conversationState.CreateProperty<DialogState>(nameof(DialogState)),
