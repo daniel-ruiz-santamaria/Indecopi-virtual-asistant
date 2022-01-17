@@ -57,6 +57,7 @@ namespace IndecopiVirtualAssitant
             services.AddSingleton<IAzureTableRepository, AzureTableRepository>();
 
             services.AddSingleton<State>();
+            services.AddSingleton<SessionsData>();
 
             // DB
             //services.AddSingleton<AnswerRepository>();

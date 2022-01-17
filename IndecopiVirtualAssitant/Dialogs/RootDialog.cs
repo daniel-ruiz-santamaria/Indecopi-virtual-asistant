@@ -21,6 +21,7 @@ namespace IndecopiVirtualAssitant.Dialogs
         private readonly ILuisService _luisService;
         private readonly UserState _userState;
         private readonly State _state;
+        private readonly SessionsData _sessionsData;
         private readonly IAzureTableRepository _tableRepository;
         private readonly IQnAMakerAIService _qnaMakerAIService;
         private const string ASSISTANT_DATA_TABLE = "asistantData";
@@ -28,19 +29,20 @@ namespace IndecopiVirtualAssitant.Dialogs
         private const string ANSWERS_TABLE = "answers";
         private User logedUser;
 
-        public RootDialog(ILuisService luisService, IQnAMakerAIService qnaMakerAIService, UserState userState, State state , IAzureTableRepository tableRepository)
+        public RootDialog(ILuisService luisService, IQnAMakerAIService qnaMakerAIService, UserState userState, State state ,SessionsData sessionsData, IAzureTableRepository tableRepository)
         {
             _luisService = luisService;
             _qnaMakerAIService = qnaMakerAIService;
             _userState = userState;
             _state = state;
+            _sessionsData = sessionsData;
             _tableRepository = tableRepository;
             var waterfallSteps = new WaterfallStep[]
             {
                 InitialProcess,
                 FinalProcess
             };
-            // AddDialog(new RegisterDialog());
+            AddDialog(new RegisterDialog(tableRepository));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
             InitialDialogId = nameof(WaterfallDialog);
         }
@@ -56,11 +58,11 @@ namespace IndecopiVirtualAssitant.Dialogs
         // Metodo para gestionar las intenciones de luis
         private async Task<DialogTurnResult> ManageIntentions(WaterfallStepContext stepContext, RecognizerResult luisResult, CancellationToken cancellationToken)
         {
-            //    if (false && logedUser == null)
-            //    {
-            // 
-            // return await stepContext.BeginDialogAsync(nameof(RegisterDialog), cancellationToken: cancellationToken);
-            // } else { 
+            if (logedUser == null && false)
+                {
+             
+             return await stepContext.BeginDialogAsync(nameof(RegisterDialog), cancellationToken: cancellationToken);
+             } else { 
             Audit audit = new Audit(_state);
             var topIntent = luisResult.GetTopScoringIntent();
             var resultQna = await _qnaMakerAIService._qnaMakerResult.GetAnswersAsync(stepContext.Context);
@@ -97,6 +99,9 @@ namespace IndecopiVirtualAssitant.Dialogs
                     case "Contactanos":
                         await IntentContatanos(stepContext, luisResult, cancellationToken, audit);
                         break;
+                    case "Registrar":
+                        await IntentRegistrar(stepContext, luisResult,cancellationToken,audit);
+                        break;
                     case "None":
                         if ((score - topIntent.score) > 0.2)
                         {
@@ -124,9 +129,8 @@ namespace IndecopiVirtualAssitant.Dialogs
                     await IntentQnaMaker(stepContext, resultQnaAnsware, cancellationToken, audit);
                 }
                 return await stepContext.NextAsync(cancellationToken: cancellationToken);
-            // }
+             }
         }
-
         /*
         private async Task<DialogTurnResult> HandleIntent(WaterfallStepContext stepContext, RecognizerResult luisResult, CancellationToken cancellationToken) {
         }
@@ -188,6 +192,11 @@ namespace IndecopiVirtualAssitant.Dialogs
             await _tableRepository.SaveAuditData(AUDIT_TABLE, audit);
             await MainOptionsCard.ToShowQnAResponse(stepContext, cancellationToken,queryResult);
             // await stepContext.Context.SendActivityAsync(audit.answer, cancellationToken: cancellationToken);
+        }
+        private async Task IntentRegistrar(WaterfallStepContext stepContext, RecognizerResult luisResult, CancellationToken cancellationToken, Audit audit)
+        {
+            await _tableRepository.SaveAuditData(AUDIT_TABLE, audit);
+            await stepContext.BeginDialogAsync(nameof(RegisterDialog), cancellationToken: cancellationToken);
         }
 
 

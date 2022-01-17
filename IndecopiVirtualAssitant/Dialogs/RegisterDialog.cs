@@ -1,4 +1,5 @@
 ﻿using IndecopiVirtualAssitant.Models.AzureTable;
+using IndecopiVirtualAssitant.Repositories;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -13,8 +14,11 @@ namespace IndecopiVirtualAssitant.Dialogs
 {
     public class RegisterDialog : ComponentDialog 
     {
-        public RegisterDialog()
+        private const string ANSWERS_TABLE = "answers";
+        private readonly IAzureTableRepository _tableRepository;
+        public RegisterDialog(IAzureTableRepository tableRepository)
         {
+            _tableRepository = tableRepository;
             var waterFallStep = new WaterfallStep[] {
                 SetFullName,
                 SetDocumentType,
@@ -30,9 +34,10 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> SetFullName(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "SetName", "*Para poder ayudarte mejor voy a necesitar que me facilite algunos datos:\n\n¿ Cual es su nombre completo ?");
             return await stepContext.PromptAsync(
                 nameof(TextPrompt),
-                new PromptOptions { Prompt = MessageFactory.Text("Para poder ayudarte mejor voy a necesitar que me facilite algunos datos:\n\n¿ Cual es su nombre completo ?")},
+                new PromptOptions { Prompt = MessageFactory.Text(text) },
                 cancellationToken
                 );
         }
@@ -50,11 +55,12 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> SetDocumentNumber(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "SetDocumentNumber", "*Para terminar ingrese su número de documento");
             var documentType = stepContext.Context.Activity.Text;
 
             return await stepContext.PromptAsync(
                 nameof(TextPrompt),
-                new PromptOptions { Prompt = MessageFactory.Text("Para terminar ingrese su número de documento") },
+                new PromptOptions { Prompt = MessageFactory.Text(text) },
                 cancellationToken
                 );
         }
@@ -74,22 +80,27 @@ namespace IndecopiVirtualAssitant.Dialogs
             var confirmation = stepContext.Context.Activity.Text;
             if (confirmation.ToLower().Equals("si")) 
             {
-                await stepContext.Context.SendActivityAsync("Pues de puta madre tio", cancellationToken: cancellationToken);
+                string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "RegisterDone", "Registro completado");
+                await stepContext.Context.SendActivityAsync(text, cancellationToken: cancellationToken);
             } 
             else if(confirmation.ToLower().Equals("no")) 
             {
-                await stepContext.Context.SendActivityAsync("No hay problema", cancellationToken: cancellationToken);
+                string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "RegisterCancel", "Registro no completado");
+                await stepContext.Context.SendActivityAsync(text, cancellationToken: cancellationToken);
             } 
             else 
             {
-                await stepContext.Context.SendActivityAsync("No hay problema", cancellationToken: cancellationToken);
+                string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "RegisterEscaped", "Registro abortado");
+                await stepContext.Context.SendActivityAsync(text, cancellationToken: cancellationToken);
             }
             return await stepContext.ContinueDialogAsync(cancellationToken: cancellationToken);
         }
 
         private Activity CreateButtonsConfirmation()
         {
-            var reply = MessageFactory.Text("¿Confirmas tus datos?");
+            var answer = _tableRepository.getAnswer(ANSWERS_TABLE, "RegisterConfirmation", "*¿Quieres confirmar el registro?");
+            answer.Wait();
+            var reply = MessageFactory.Text(answer.Result.ToString());
             reply.SuggestedActions = new SuggestedActions()
             {
                 Actions = new List<CardAction>()
@@ -103,12 +114,14 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private Activity CreateButtonsDocumentType()
         {
+            var answer =  _tableRepository.getAnswer(ANSWERS_TABLE, "SetDocumentType", "*¿Cual es su tipo de documento?");
+            answer.Wait();
             List<CardAction> actions = new List<CardAction>();
             foreach (DocumentType dt in DocumentType.GetValues(typeof(DocumentType)))
             {
                 actions.Add(new CardAction() { Title = Enums.GetDescription(dt), Value = dt.ToString(), Type = ActionTypes.ImBack });
             }
-            var reply = MessageFactory.Text("¿Cual es su tipo de documento?");
+            var reply = MessageFactory.Text(answer.Result.ToString());
             reply.SuggestedActions = new SuggestedActions()
             {
                 Actions = actions

@@ -16,6 +16,8 @@ namespace IndecopiVirtualAssitant.Models.AzureTable
         public double score { get; set; }
         public String query { get; set; }
         public String answer { get; set; }
+        public String idUser { get; set; }
+        public String nameUser { get; set; }
         public DateTime date { get; set; }
         private String _IdAudit;
         public String IdAudit
@@ -65,8 +67,8 @@ namespace IndecopiVirtualAssitant.Models.AzureTable
             channelId = state.idChannel;
             channelName = state.nameChannel;
             date = DateTime.Now;
+            idUser = state.idUser;
+            nameUser = state.nameUser;
         }
-
-
     }
 }
