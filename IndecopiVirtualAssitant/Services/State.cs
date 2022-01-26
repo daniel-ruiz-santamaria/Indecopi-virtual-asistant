@@ -11,10 +11,13 @@ namespace IndecopiVirtualAssitant.Services
     {
         public string idRequest { get; set; }
         public string idUser { get; set; }
+        public string nameUser { get; set; }
         public string idSession { get; set; }
         public string nameChannel { get; set; }
         public string idChannel { get; set; }
         public Activity activity { get; set; }
+
+
 
         public void AddActivity(ITurnContext<IMessageActivity> turnContext) {
             this.activity = turnContext.Activity as Activity;

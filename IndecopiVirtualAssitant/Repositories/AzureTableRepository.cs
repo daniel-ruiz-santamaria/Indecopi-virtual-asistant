@@ -35,6 +35,33 @@ namespace IndecopiVirtualAssitant.Repositories
             return insertedAudit;
         }
 
+        public async Task<User> SaveUserData(string tableName, User user)
+        {
+            CloudTable table = await this.CreateTableAzureStorage(tableName);
+            TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(user);
+            TableResult result = await table.ExecuteAsync(insertOrMergeOperation);
+            User insertedUser = result.Result as User;
+            return insertedUser;
+        }
+
+        public async Task<SupportRequest> SaveSupportRequestData(string tableName, SupportRequest sr)
+        {
+            CloudTable table = await this.CreateTableAzureStorage(tableName);
+            TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(sr);
+            TableResult result = await table.ExecuteAsync(insertOrMergeOperation);
+            SupportRequest inserted = result.Result as SupportRequest;
+            return inserted;
+        }
+
+        public async Task<Feedback> SaveFeedbackData(string tableName, Feedback f)
+        {
+            CloudTable table = await this.CreateTableAzureStorage(tableName);
+            TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(f);
+            TableResult result = await table.ExecuteAsync(insertOrMergeOperation);
+            Feedback inserted = result.Result as Feedback;
+            return inserted;
+        }
+
         public async Task<string> getAnswer(string tableName, string intent, String defaultAnswer)
         {
             List<Answer> answers = new List<Answer>();
@@ -59,7 +86,7 @@ namespace IndecopiVirtualAssitant.Repositories
                 int index = new Random().Next(0, answers.Count);
                 return answers[index].answer;
             }
-            return null;
+            return defaultAnswer;
         }
 
         public async Task<List<AssistantData>> getAssistantData(string tableName, string partitionKey, string key)
@@ -69,6 +96,28 @@ namespace IndecopiVirtualAssitant.Repositories
             string partitionFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
             string keyFilter = TableQuery.GenerateFilterCondition("key", QueryComparisons.Equal, key);
             string filter = TableQuery.CombineFilters(partitionFilter, TableOperators.And, keyFilter);
+            TableContinuationToken continuationToken = null;
+            do
+            {
+                var result = await table.ExecuteQuerySegmentedAsync(new TableQuery<AssistantData>().Where(filter), continuationToken);
+                continuationToken = result.ContinuationToken;
+                if (result.Results != null)
+                {
+                    foreach (AssistantData entity in result.Results)
+                    {
+                        data.Add(entity);
+                    }
+                }
+
+            } while (continuationToken != null);
+            return data;
+        }
+
+        public async Task<List<AssistantData>> getAssistantData(string tableName, string partitionKey)
+        {
+            List<AssistantData> data = new List<AssistantData>();
+            CloudTable table = await this.CreateTableAzureStorage(tableName);
+            string filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
             TableContinuationToken continuationToken = null;
             do
             {

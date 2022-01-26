@@ -39,6 +39,8 @@ namespace IndecopiVirtualAssitant
                 Configuration.GetSection("AzureStorageConnectionString").Value,
                 Configuration.GetSection("BlobStorageStateContainer").Value
                 );
+
+            var x = Configuration["pepapi"];
             var userState = new UserState(blobStorageState);
             services.AddSingleton(userState);
 
@@ -57,6 +59,7 @@ namespace IndecopiVirtualAssitant
             services.AddSingleton<IAzureTableRepository, AzureTableRepository>();
 
             services.AddSingleton<State>();
+            services.AddSingleton<SessionsData>();
 
             // DB
             //services.AddSingleton<AnswerRepository>();
