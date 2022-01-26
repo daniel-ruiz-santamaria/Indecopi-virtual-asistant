@@ -70,5 +70,10 @@ namespace IndecopiVirtualAssitant.Models.AzureTable
             idUser = state.idUser;
             nameUser = state.nameUser;
         }
+
+        public static implicit operator Audit(SupportRequest v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

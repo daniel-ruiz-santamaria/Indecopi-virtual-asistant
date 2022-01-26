@@ -4,6 +4,7 @@
 // using IndecopiVirtualAssitant.Models.AzureTable;
 using Azure.Data.Tables;
 using IndecopiVirtualAssitant.Dialogs;
+using IndecopiVirtualAssitant.Models;
 using IndecopiVirtualAssitant.Repositories;
 using IndecopiVirtualAssitant.Services;
 using Microsoft.Bot.Builder;
@@ -23,16 +24,18 @@ namespace IndecopiVirtualAssitant
         private readonly Dialog _dialog;
         private readonly State _state;
         private readonly IAzureTableRepository _tableRepository;
-        private readonly DialogSet _dialogs;
+        // private readonly DialogSet _dialogs;
+        private readonly SessionsData _sessionsData;
         // private readonly AuditRepository _auditRepository;
 
-        public IndecopiVirtualAssitant(UserState userState, ConversationState conversationState, T dialog, State state, IAzureTableRepository tableRepository)
+        public IndecopiVirtualAssitant(UserState userState, ConversationState conversationState, T dialog, State state, IAzureTableRepository tableRepository, SessionsData sessionsData)
         {
             _userState = userState;
             _conversationState = conversationState;
             _dialog = dialog;
             _state = state;
             _tableRepository = tableRepository;
+            _sessionsData = sessionsData;
             // _auditRepository = auditRepository;
         }
 
@@ -44,6 +47,7 @@ namespace IndecopiVirtualAssitant
                 {
                     _state.idUser = member.Id;
                     _state.nameUser = member.Name;
+                    _sessionsData.addSesionState(new SessionState(member.Id));
                     var answer = await _tableRepository.getAnswer("answers", "InitialGreeting", "Hola, soy un asistente virtual, estoy desando ayudarte ¿Cómo puedo ayudar?");
                     // await turnContext.SendActivityAsync(MessageFactory.Text(answer), cancellationToken);
                     var card = new HeroCard();

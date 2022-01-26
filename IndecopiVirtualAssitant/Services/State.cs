@@ -17,6 +17,8 @@ namespace IndecopiVirtualAssitant.Services
         public string idChannel { get; set; }
         public Activity activity { get; set; }
 
+
+
         public void AddActivity(ITurnContext<IMessageActivity> turnContext) {
             this.activity = turnContext.Activity as Activity;
             this.idRequest = turnContext.Activity.Id;

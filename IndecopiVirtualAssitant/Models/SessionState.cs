@@ -15,6 +15,17 @@ namespace IndecopiVirtualAssitant.Models
         public SessionState(String _idSesion)
         {
             this.idSesion = _idSesion;
+            this.user = new User();
+            this.isLoged = false;
+            this.isCalificated = false;
+        }
+
+        public SessionState(String _idSesion, User _user)
+        {
+            this.idSesion = _idSesion;
+            this.user = user;
+            this.isLoged = false;
+            this.isCalificated = false;
         }
     }
 }
