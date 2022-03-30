@@ -1,5 +1,6 @@
 ﻿using IndecopiVirtualAssitant.Services;
 using Microsoft.Azure.Cosmos.Table;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,5 +76,11 @@ namespace IndecopiVirtualAssitant.Models.AzureTable
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
     }
 }

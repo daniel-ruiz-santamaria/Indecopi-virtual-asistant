@@ -27,6 +27,15 @@ namespace IndecopiVirtualAssitant.Services
             this.idSession = turnContext.Activity.From.Id;
         }
 
+        public void AddActivity(Activity activity)
+        {
+            this.activity = activity;
+            this.idRequest = activity.Id;
+            this.idChannel = activity.ChannelId;
+            this.nameChannel = activity.From.Name;
+            this.idSession = activity.From.Id;
+        }
+
 
     }
 }

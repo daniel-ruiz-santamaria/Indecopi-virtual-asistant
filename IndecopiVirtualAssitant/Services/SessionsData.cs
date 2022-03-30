@@ -16,7 +16,8 @@ namespace IndecopiVirtualAssitant.Services
         }
 
         public void addSesionState(SessionState sesionState) {
-            this.sesionState.Add(sesionState.idSesion, sesionState);
+
+            this.sesionState[sesionState.idSesion] = sesionState;
         }
 
         public SessionState getSesionState(String idSesion)

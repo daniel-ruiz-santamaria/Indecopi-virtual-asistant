@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Data.Tables" Version="12.3.0" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.2.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.7.2" />
@@ -15,6 +18,7 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.7.2" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="3.1.6" />
+    <PackageReference Include="RestSharp" Version="107.3.0" />
   </ItemGroup>
 
     <ItemGroup>

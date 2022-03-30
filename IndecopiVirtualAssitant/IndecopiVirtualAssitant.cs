@@ -27,6 +27,9 @@ namespace IndecopiVirtualAssitant
         // private readonly DialogSet _dialogs;
         private readonly SessionsData _sessionsData;
         // private readonly AuditRepository _auditRepository;
+        protected readonly BotState ConversationState;
+
+        private readonly RegisterDialog _registerDialog;
 
         public IndecopiVirtualAssitant(UserState userState, ConversationState conversationState, T dialog, State state, IAzureTableRepository tableRepository, SessionsData sessionsData)
         {
@@ -36,6 +39,7 @@ namespace IndecopiVirtualAssitant
             _state = state;
             _tableRepository = tableRepository;
             _sessionsData = sessionsData;
+            _registerDialog = new RegisterDialog(tableRepository, _sessionsData, _state);
             // _auditRepository = auditRepository;
         }
 
@@ -48,22 +52,23 @@ namespace IndecopiVirtualAssitant
                     _state.idUser = member.Id;
                     _state.nameUser = member.Name;
                     _sessionsData.addSesionState(new SessionState(member.Id));
+                    this._state.AddActivity(turnContext.Activity as Activity);
+                    // await turnContext.SendActivityAsync($"Hola pollito frito");
+
                     var answer = await _tableRepository.getAnswer("answers", "InitialGreeting", "Hola, soy un asistente virtual, estoy desando ayudarte ¿Cómo puedo ayudar?");
-                    // await turnContext.SendActivityAsync(MessageFactory.Text(answer), cancellationToken);
                     var card = new HeroCard();
                     card.Title = "Hola";
                     card.Text = answer;
                     card.Images = new List<CardImage>() { new CardImage("https://storagepoc5.blob.core.windows.net/images/bot.png") };
-                    card.Buttons = new List<CardAction>()
-                    {
-
-                        new CardAction(ActionTypes.PostBack, "Ver menú de opciones", null,"Menu","Menu", "Menu"),
-                        new CardAction(ActionTypes.PostBack, "FAQs", null,"ayuda","ayuda", "ayuda"),
-                        new CardAction(ActionTypes.PostBack, "Registrarme", null,"registro","registro", "registro")
-                    };
-
                     var response = MessageFactory.Attachment(card.ToAttachment());
                     await turnContext.SendActivityAsync(response, cancellationToken);
+
+                    await _dialog.RunAsync(
+                        turnContext,
+                        _conversationState.CreateProperty<DialogState>(nameof(DialogState)),
+                        cancellationToken
+                    );
+                    
                 }
             }
         }

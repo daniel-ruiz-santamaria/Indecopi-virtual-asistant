@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EmptyBot v4.15.0
 
+using IndecopiVirtualAsistant.Services;
 using IndecopiVirtualAssitant.Dialogs;
 using IndecopiVirtualAssitant.Infraestructure.Luis;
 using IndecopiVirtualAssitant.Infraestructure.QnAMakerAI;
@@ -60,6 +61,7 @@ namespace IndecopiVirtualAssitant
 
             services.AddSingleton<State>();
             services.AddSingleton<SessionsData>();
+            services.AddSingleton<ExpedientRequestService>();
 
             // DB
             //services.AddSingleton<AnswerRepository>();
@@ -70,6 +72,7 @@ namespace IndecopiVirtualAssitant
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, IndecopiVirtualAssitant<RootDialog>>();
+            services.AddApplicationInsightsTelemetry();
 
         }
 

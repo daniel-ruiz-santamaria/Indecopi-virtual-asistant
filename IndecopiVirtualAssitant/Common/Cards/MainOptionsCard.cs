@@ -116,6 +116,7 @@ namespace IndecopiVirtualAssitant.Common.Cards
                 {
                     new CardAction(){ Title = "Gestionar registro de marca",Value = "Registro de Marca",Type = ActionTypes.ImBack },
                     new CardAction(){ Title = "Ver estado de mi tramite",Value = "Ver estado de mi tramite",Type = ActionTypes.ImBack },
+                    new CardAction(){ Title = "Ver todos mis tramites",Value = "Ver todos mis tramites",Type = ActionTypes.ImBack },
                     new CardAction(){ Title = "Ir a pagina Web de Indecopi",Value = "https://www.gob.pe/indecopi",Type = ActionTypes.OpenUrl }
                 }
             };
