@@ -72,7 +72,7 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> InitialProcess(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (_sessionsData.getSesionState(_state.idSession).isLoged) {
+            if (_sessionsData.getSesionState(_state.idSession) != null && _sessionsData.getSesionState(_state.idSession).isLoged) {
                 // Obtengo el resultado de LUIS
                 isDoingLoggin = false;
                 var luisResult = await _luisService._luisRecognizer.RecognizeAsync(stepContext.Context, cancellationToken);
@@ -103,9 +103,9 @@ namespace IndecopiVirtualAssitant.Dialogs
                     card.Buttons = new List<CardAction>()
                     {
 
-                        new CardAction(ActionTypes.PostBack, "Ver menú de opciones", null,"Menu","Menu", "Menu"),
-                        new CardAction(ActionTypes.PostBack, "Preguntas frecuentes", null,"ayuda","ayuda", "ayuda"),
-                        new CardAction(ActionTypes.PostBack, "Registrarme", null,"registro","registro", "registro")
+                        new CardAction(ActionTypes.PostBack, "Marcas", null,"Marcas","Marcas", "Marcas"),
+                        new CardAction(ActionTypes.PostBack, "Reclamos", null,"Reclamos","Reclamos", "Reclamos")
+                        // new CardAction(ActionTypes.PostBack, "Registrarme", null,"registro","registro", "registro")
                     };
 
                     var response = MessageFactory.Attachment(card.ToAttachment());
@@ -119,6 +119,10 @@ namespace IndecopiVirtualAssitant.Dialogs
         // Metodo para gestionar las intenciones de luis
         private async Task<DialogTurnResult> ManageIntentions(WaterfallStepContext stepContext, RecognizerResult luisResult, CancellationToken cancellationToken)
         {
+            if (stepContext.Context.Activity.Text == "Salir") {
+                return await stepContext.NextAsync(cancellationToken: cancellationToken);
+            }
+
             Audit audit = new Audit(_state);
             var topIntent = luisResult.GetTopScoringIntent();
             var resultQna = await _qnaMakerAIService._qnaMakerResult.GetAnswersAsync(stepContext.Context);
@@ -153,6 +157,9 @@ namespace IndecopiVirtualAssitant.Dialogs
                         break;
                     case "VerOpciones":
                         await IntentVerOpciones(stepContext, luisResult, cancellationToken, audit);
+                        break;
+                    case "Reclamos":
+                        await IntentVerReclamos(stepContext, luisResult, cancellationToken, audit);
                         break;
                     case "Contactanos":
                         await IntentContatanos(stepContext, luisResult, cancellationToken, audit);
@@ -263,6 +270,10 @@ private async Task<DialogTurnResult> HandleIntent(WaterfallStepContext stepConte
 */
 
         #region intentLuis
+        private async Task IntentVerReclamos(WaterfallStepContext stepContext, RecognizerResult luisResult, CancellationToken cancellationToken, Audit audit)
+        {
+            await stepContext.Context.SendActivityAsync("Aun sin contenido", cancellationToken: cancellationToken);
+        }
         private async Task IntentVerOpciones(WaterfallStepContext stepContext, RecognizerResult luisResult, CancellationToken cancellationToken, Audit audit)
         {
             audit.answer = await _tableRepository.getAnswer(ANSWERS_TABLE, audit.intent, "Estas son las opciones:");
@@ -307,7 +318,7 @@ private async Task<DialogTurnResult> HandleIntent(WaterfallStepContext stepConte
                 await stepContext.Context.SendActivityAsync(s, cancellationToken: cancellationToken);
                 await Task.Delay(1000);
             }
-            var addressTexts = await _tableRepository.getAssistantData(ASSISTANT_DATA_TABLE, "contact", "phoneText");
+            var addressTexts = await _tableRepository.getAssistantData(ASSISTANT_DATA_TABLE, "contact", "addressText");
             string addressStr = addressTexts[new Random().Next(0, addressTexts.Count)].value + Environment.NewLine;
             await stepContext.Context.SendActivityAsync(addressStr, cancellationToken: cancellationToken);
             await MainOptionsCard.ToShowAddresses(_tableRepository, stepContext, cancellationToken);

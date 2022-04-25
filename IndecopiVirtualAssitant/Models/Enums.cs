@@ -12,12 +12,12 @@ namespace IndecopiVirtualAssitant.Models.AzureTable
     {
         public enum DocumentType
         {
-            [Description("LIBRETA ELECTORAL O DNI")] DNI = 1,
+            [Description("DNI")] DNI = 1,
             [Description("CARNET DE EXTRANJERIA")] EXT = 2,
-            [Description("REG. UNICO DE CONTRIBUYENTES")] RUC = 3,
             [Description("PASAPORTE")] PASAPORTE = 4,
-            [Description("PART. DE NACIMIENTO-IDENTIDAD")] PNAC = 5,
-            [Description("OTROS")] OTROS = 6,
+            [Description("RUC")] RUC = 3,
+            //Description("PART. DE NACIMIENTO-IDENTIDAD")] PNAC = 5,
+            //[Description("OTROS")] OTROS = 6,
             [Description("NO APORTA DOCUMENTO")] NO = 7
 
         }
@@ -34,12 +34,16 @@ namespace IndecopiVirtualAssitant.Models.AzureTable
                     return DocumentType.RUC;
                 case "PASAPORTE":
                     return DocumentType.PASAPORTE;
-                case "PNAC":
-                    return DocumentType.PNAC;
-                case "OTROS":
-                    return DocumentType.OTROS;
                 default:
                     return DocumentType.NO;
+                    /*
+                    case "PNAC":
+                        return DocumentType.PNAC;
+                    case "OTROS":
+                        return DocumentType.OTROS;
+                    default:
+                        return DocumentType.NO;
+                    */
             }
         }
 

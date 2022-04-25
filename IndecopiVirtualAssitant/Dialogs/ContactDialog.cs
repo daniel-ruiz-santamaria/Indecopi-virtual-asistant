@@ -33,12 +33,14 @@ namespace IndecopiVirtualAsistant.Dialogs
         private readonly string DlgDepartmentId = "DepartmentDialog";
         private readonly string DlgMailId = "MailDialog";
         private readonly string DlgPhoneId = "PhoneDialog";
+        private int countErrors = 0;
 
         public ContactDialog(IAzureTableRepository tableRepository, SessionsData sessionsData, State state)
         {
             _tableRepository = tableRepository;
             _sessionsData = sessionsData;
             _state = state;
+            countErrors = 0;
             var waterFallSteps = new WaterfallStep[] {
                 InitialProcess,
                 WelcomeProcess,
@@ -58,7 +60,8 @@ namespace IndecopiVirtualAsistant.Dialogs
 
         private async Task<DialogTurnResult> InitialProcess(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await stepContext.Context.SendActivityAsync("Para que te atienda una persona, necesito hacerte algunas preguntas, para trasladar tu caso al interlocutor adecuado", cancellationToken: cancellationToken);
+            countErrors = 0;
+            await stepContext.Context.SendActivityAsync("Para que te atienda una persona, necesito hacerte algunas preguntas, para trasladar tu caso al interlocutor adecuado. Puedes escribir salir, para interrumpir la conversación y volver al menú", cancellationToken: cancellationToken);
             this._supportRequest = new SupportRequest(_state);
             this._sessionState = _sessionsData.getSesionState(_state.idSession);
             if (!_sessionState.isLoged) {
@@ -86,16 +89,27 @@ namespace IndecopiVirtualAsistant.Dialogs
             var results = await _tableRepository.getAssistantData(ASSISTANT_DATA_TABLE, "department", dep);
             if (results != null && results.Count > 0)
             {
+                countErrors = 0;
                 return true;
             }
             else
             {
+                countErrors += 1;
+                if (countErrors >= 3 || promptContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+                {
+                    return true;
+                }
                 return false;
             }
         }
 
         private async Task<DialogTurnResult> SetDepartment(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors > 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir")) {
+                await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                stepContext.Context.Activity.Text = "Menu";
+                return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+            }
             return await stepContext.PromptAsync(
                 DlgDepartmentId,
                 new PromptOptions() { 
@@ -112,15 +126,28 @@ namespace IndecopiVirtualAsistant.Dialogs
             var mail = promptContext.Context.Activity.Text;
             if (new EmailAddressAttribute().IsValid(mail)) 
             {
+                countErrors = 0;
                 return true;
             } else 
             {
+                countErrors += 1;
+                if (countErrors >= 3 || promptContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+                {
+                    return true;
+                }
                 return false;
             }
         }
 
         private async Task<DialogTurnResult> SetMail(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                stepContext.Context.Activity.Text = "Menu";
+                return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+            }
             _supportRequest.departmentId = stepContext.Context.Activity.Text;
             var departmentNames = await _tableRepository.getAssistantData(ASSISTANT_DATA_TABLE, "department", _supportRequest.departmentId);
             _supportRequest.departmentName = departmentNames[0].value;
@@ -142,16 +169,28 @@ namespace IndecopiVirtualAsistant.Dialogs
             Match match = regex.Match(response.ToString());
             if (response!=null && match.Success)
             {
+                countErrors = 0;
                 return true;
             }
             else
             {
+                countErrors += 1;
+                if (countErrors >= 3 || promptContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+                {
+                    return true;
+                }
                 return false;
             }
         }
 
         private async Task<DialogTurnResult> SetContactPhone(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors > 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                stepContext.Context.Activity.Text = "Menu";
+                return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+            }
             _supportRequest.email = stepContext.Context.Activity.Text;
             return await stepContext.PromptAsync(
                DlgPhoneId,
@@ -165,6 +204,12 @@ namespace IndecopiVirtualAsistant.Dialogs
 
         private async Task<DialogTurnResult> SetQuery(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                stepContext.Context.Activity.Text = "Menu";
+                return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+            }
             _supportRequest.phone = stepContext.Context.Activity.Text;
             return await stepContext.PromptAsync(
                nameof(TextPrompt),
@@ -175,6 +220,12 @@ namespace IndecopiVirtualAsistant.Dialogs
 
         private async Task<DialogTurnResult> FinalProcess(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                stepContext.Context.Activity.Text = "Menu";
+                return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+            }
             _supportRequest.request = stepContext.Context.Activity.Text;
             await _tableRepository.SaveSupportRequestData(SUPPORT_DATA_TABLE, _supportRequest);
             await stepContext.Context.SendActivityAsync("Consulta enviada, al departamento indicado, por favor, espere respuesta", cancellationToken: cancellationToken);

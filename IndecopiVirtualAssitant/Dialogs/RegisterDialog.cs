@@ -40,7 +40,7 @@ namespace IndecopiVirtualAssitant.Dialogs
                 SetFullName,
                 SetDocumentType,
                 SetDocumentNumber,
-                Confirmation,
+                // Confirmation,
                 FinalProcess
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterFallStep));
@@ -54,7 +54,7 @@ namespace IndecopiVirtualAssitant.Dialogs
         {
             var response = promptContext.Context.Activity.Text;
 
-            Regex regex = new Regex(@"\b([A-ZÀ-ÿ][-,A-Za-z. ']+[ ]*)+");
+            Regex regex = new Regex(@"\b([A-ZÀ-ÿa-zá-ÿ][-,A-Za-z. ']+[ ]*)+");
             Match match = regex.Match(response.ToString());
             if (response != null && match.Success)
             {
@@ -156,6 +156,16 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> FinalProcess(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _user.IdDocument = stepContext.Context.Activity.Text.ToLower();
+            _user.IdRegistredUser = _user.documentType.ToString() + "-" + _user.IdDocument;
+            _user.isLoged = true;
+            _sessionState.isLoged = true;
+            _user = _sessionState.user;
+            await _tableRepository.SaveUserData(USERS_TABLE, _user);
+            string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "RegisterDone", "Registro completado");
+            await stepContext.Context.SendActivityAsync(text.Replace("\\n", "\n"), cancellationToken: cancellationToken);
+            return await stepContext.ContinueDialogAsync(cancellationToken: cancellationToken);
+            /*
             var confirmation = stepContext.Context.Activity.Text;
             if (confirmation.ToLower().Equals("si")) 
             {
@@ -179,6 +189,7 @@ namespace IndecopiVirtualAssitant.Dialogs
                 return await stepContext.ReplaceDialogAsync(nameof(RegisterDialog), cancellationToken: cancellationToken);
             }
             return await stepContext.ContinueDialogAsync(cancellationToken: cancellationToken);
+            */
         }
 
         private Activity CreateButtonsConfirmation()
@@ -202,7 +213,10 @@ namespace IndecopiVirtualAssitant.Dialogs
             List<CardAction> actions = new List<CardAction>();
             foreach (DocumentType dt in DocumentType.GetValues(typeof(DocumentType)))
             {
-                actions.Add(new CardAction() { Title = Enums.GetDescription(dt), Value = dt.ToString(), Type = ActionTypes.ImBack });
+                if (dt != DocumentType.NO)
+                {
+                    actions.Add(new CardAction() { Title = Enums.GetDescription(dt), Value = dt.ToString(), Type = ActionTypes.ImBack });
+                }
             }
             var reply = MessageFactory.Text(answer);
             reply.SuggestedActions = new SuggestedActions()

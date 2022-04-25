@@ -152,7 +152,7 @@ namespace IndecopiVirtualAssitant.Common.Cards
                 cardFAQs.ToAttachment(),
                 cardProcess.ToAttachment(),
                 cardContact.ToAttachment(),
-                cardCalification.ToAttachment()
+                // cardCalification.ToAttachment()
             };
 
             var reply = MessageFactory.Attachment(optionAttachments);

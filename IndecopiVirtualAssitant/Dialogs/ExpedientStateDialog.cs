@@ -33,6 +33,7 @@ namespace IndecopiVirtualAssitant.Dialogs
         private readonly string DlgDocumentId = "DocumentDialog";
         private readonly string DlgNameId = "NameDialog";
         private readonly string DlgExpedientId = "ExpedientDialog";
+        private int countErrors = 0;
 
         private readonly IAzureTableRepository _tableRepository;
         public ExpedientStateDialog(IAzureTableRepository tableRepository, ExpedientRequestService expedientRequestService, SessionsData sessionsData, State state, Dictionary<string,string> d)
@@ -42,8 +43,10 @@ namespace IndecopiVirtualAssitant.Dialogs
             _sessionsData = sessionsData;
             _state = state;
             _input = d;
+            countErrors = 0;
             // _sessionState = sessionsData.getSesionState(_state.idSession);
             var waterFallStep = new WaterfallStep[] {
+                Initialize,
                 ConfirmName,
                 SetFullName,
                 ConfirmDocument,
@@ -60,18 +63,32 @@ namespace IndecopiVirtualAssitant.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
         }
 
+        private async Task<DialogTurnResult> Initialize(WaterfallStepContext stepContext, CancellationToken cancellationToken) {
+            countErrors = 0;
+            _name = null;
+            _documentNumber = null;
+            _expedientNumber = null;
+            return await stepContext.ContinueDialogAsync(cancellationToken: cancellationToken);
+        }
+
         private async Task<bool> NameValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
         {
             var response = promptContext.Context.Activity.Text;
 
-            Regex regex = new Regex(@"^\b([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$");
+            Regex regex = new Regex(@"^\b([A-ZÀ-ÿa-z][-,a-z. ']+[ ]*)+$");
             Match match = regex.Match(response.ToString());
             if (response != null && match.Success)
             {
+                countErrors = 0;
                 return true;
             }
             else
             {
+                countErrors += 1;
+                if (countErrors >= 3 || promptContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+                {
+                    return true;
+                }
                 return false;
             }
         }
@@ -96,6 +113,21 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> SetFullName(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors > 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                if (countErrors > 3)
+                {
+                    await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                    stepContext.Context.Activity.Text = "Menu";
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync("La búsqueda ha sido cancelada", cancellationToken: cancellationToken);
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+            }
+
             if (stepContext.Context.Activity.Text.ToLower().Equals("no") || _name == null)
             { // Si pulse NO en el boton, entonces pido los datos
                 string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "SetNameSearchExpedient", "*Por favor introduce el nombre que figura en tu expediente");
@@ -121,16 +153,36 @@ namespace IndecopiVirtualAssitant.Dialogs
             Match match = regex.Match(response.ToString());
             if (response != null && match.Success)
             {
+                countErrors = 0;
                 return true;
             }
             else
             {
+                countErrors += 1;
+                if (countErrors >= 3 || promptContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+                {
+                    return true;
+                }
                 return false;
             }
         }
 
         private async Task<DialogTurnResult> ConfirmDocument(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                if (countErrors >= 3)
+                {
+                    await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                    stepContext.Context.Activity.Text = "Menu";
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync("La búsqueda ha sido cancelada", cancellationToken: cancellationToken);
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+            }
 
             if (!stepContext.Context.Activity.Text.ToLower().Equals("si"))
             {
@@ -154,6 +206,21 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> SetDocumentNumber(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                if (countErrors >= 3)
+                {
+                    await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                    stepContext.Context.Activity.Text = "Menu";
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync("La búsqueda ha sido cancelada", cancellationToken: cancellationToken);
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+            }
+
             if (stepContext.Context.Activity.Text.ToLower().Equals("no") || _documentNumber == null)
             { // Si pulse NO en el boton, entonces pido los datos
                 string text = await _tableRepository.getAnswer(ANSWERS_TABLE, "SetDocumentNumberSearchExpedient", "*Por favor introduce el **nº de documento** a búscar");
@@ -180,16 +247,37 @@ namespace IndecopiVirtualAssitant.Dialogs
             Match match = regex.Match(response.ToString());
             if (response != null && match.Success)
             {
+                countErrors = 0;
                 return true;
             }
             else
             {
+                countErrors += 1;
+                if (countErrors >= 3 || promptContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+                {
+                    return true;
+                }
                 return false;
             }
         }
 
         private async Task<DialogTurnResult> ConfirmExpedientNumber(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                if (countErrors >= 3)
+                {
+                    await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                    stepContext.Context.Activity.Text = "Menu";
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync("La búsqueda ha sido cancelada", cancellationToken: cancellationToken);
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+            }
+
             if (!stepContext.Context.Activity.Text.ToLower().Equals("si"))
             {
                 _documentNumber = stepContext.Context.Activity.Text;
@@ -212,6 +300,20 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> SetExpedientNumber(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                if (countErrors >= 3)
+                {
+                    await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                    stepContext.Context.Activity.Text = "Menu";
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync("La búsqueda ha sido cancelada", cancellationToken: cancellationToken);
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+            }
 
             if (stepContext.Context.Activity.Text.ToLower().Equals("no") || _expedientNumber == null)
             { // Si pulse NO en el boton, entonces pido los datos
@@ -233,6 +335,21 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> Confirmation(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors >= 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                if (countErrors >= 3)
+                {
+                    await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                    stepContext.Context.Activity.Text = "Menu";
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync("La búsqueda ha sido cancelada", cancellationToken: cancellationToken);
+                    return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+                }
+            }
+
             if (!stepContext.Context.Activity.Text.ToLower().Equals("si"))
             {
                 _expedientNumber = stepContext.Context.Activity.Text;
@@ -247,6 +364,12 @@ namespace IndecopiVirtualAssitant.Dialogs
 
         private async Task<DialogTurnResult> FinalProcess(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (countErrors > 3 || stepContext.Context.Activity.Text.ToLower().Trim().Equals("salir"))
+            {
+                await stepContext.Context.SendActivityAsync("Has superado el número de reintentos permitido, vamos a salir de este dialogo", cancellationToken: cancellationToken);
+                stepContext.Context.Activity.Text = "Menu";
+                return await stepContext.ReplaceDialogAsync(nameof(RootDialog), null, cancellationToken);
+            }
             var confirmation = stepContext.Context.Activity.Text;
             if (confirmation.ToLower().Equals("si")) 
             {
@@ -317,7 +440,8 @@ namespace IndecopiVirtualAssitant.Dialogs
                 Actions = new List<CardAction>()
                 {
                     new CardAction() { Title = "Si, quiero usar " + value, Value = "Si", Type = ActionTypes.ImBack },
-                    new CardAction() { Title = "No, quiero introducir otro", Value = "No", Type = ActionTypes.ImBack }
+                    new CardAction() { Title = "No, quiero introducir otro", Value = "No", Type = ActionTypes.ImBack },
+                    new CardAction() { Title = "Cancelar", Value = "Salir", Type = ActionTypes.ImBack }
                 }
             };
             return reply as Activity;
